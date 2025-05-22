@@ -13,8 +13,8 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  const { name, description, members } = req.body;
-  const newGroup = new Group({ name, description, members });
+  const { name, description, members, cayleyTable } = req.body;
+  const newGroup = new Group({ name, description, members, cayleyTable });
 
   try {
     const savedGroup = await newGroup.save();
