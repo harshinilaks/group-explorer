@@ -169,3 +169,32 @@ body[data-theme='dark'] {
     z-index: 1;
     position: relative;
 }
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    max-height: 300px; 
+  }
+  
+  .group-card {
+    overflow-x: auto;
+    max-width: 100%;
+  }
+
+  .table-container::-webkit-scrollbar {
+    height: 6px;
+  }
+  
+  .table-container::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .table-container::-webkit-scrollbar-thumb {
+    background-color: rgba(100, 100, 100, 0.4);
+    border-radius: 3px;
+  }
+  
+  .table-container {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(100, 100, 100, 0.4) transparent;
+  }

@@ -181,31 +181,33 @@ function Welcome() {
           >
             <h3 className="group-title">{formatGroupName(group.name)}</h3>
             <p className="group-desc">{group.description}</p>
-            <table className="cayley-table">
-              <thead>
-                <tr>
-                  <th></th>
-                  {group.members.slice(0, 6).map((el, idx) => (
-                    <th key={idx}>{el}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {group.cayleyTable.slice(0, 6).map((row, i) => (
-                  <tr key={i}>
-                    <th>{group.members[i]}</th>
-                    {row.slice(0, 6).map((cell, j) => {
-                      const isIdentity = String(cell).trim() === String(group.identity).trim();
-                      return (
-                        <td key={j} className={`cell ${isIdentity ? 'identity' : ''}`}>
-                          {cell}
-                        </td>
-                      );
-                    })}
+            <div className="table-container">
+              <table className="cayley-table">
+                <thead>
+                  <tr>
+                    <th></th>
+                    {group.members.slice(0, 6).map((el, idx) => (
+                      <th key={idx}>{el}</th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {group.cayleyTable.slice(0, 6).map((row, i) => (
+                    <tr key={i}>
+                      <th>{group.members[i]}</th>
+                      {row.slice(0, 6).map((cell, j) => {
+                        const isIdentity = String(cell).trim() === String(group.identity).trim();
+                        return (
+                          <td key={j} className={`cell ${isIdentity ? 'identity' : ''}`}>
+                            {cell}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
             {group.members.length > 6 && (
               <p style={{ fontSize: '0.8rem', marginTop: '10px', color: 'gray' }}>
                 Preview only — click to explore full group
