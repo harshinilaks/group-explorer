@@ -12,21 +12,26 @@ function generateGroup(type, n) {
     elements = Array.from({ length: n }, (_, i) => i.toString());
     operation = (a, b) => ((parseInt(a) + parseInt(b)) % n).toString();
     description = `Integers modulo ${n}`;
+    cayleyTable = elements.map(row => elements.map(col => operation(row, col)));
   } else if (type === 'D') {
     for (let i = 0; i < n; i++) elements.push(`r${i}`);
     for (let i = 0; i < n; i++) elements.push(`s${i}`);
     operation = (a, b) => `${a}*${b}`;
     description = `Dihedral group of order ${2 * n}`;
+    cayleyTable = elements.map(row => elements.map(col => operation(row, col)));
   } else if (type === 'S') {
     const perms = getPermutations(n);
     elements = perms.map(p => p.join(''));
-    operation = (a, b) => `${a}∘${b}`;
     description = `Symmetric group on ${n} elements`;
-  }
 
-  cayleyTable = elements.map(row =>
-    elements.map(col => operation(row, col))
-  );
+    const composePerm = (a, b) => {
+      return a.map(i => b[i - 1]);
+    };
+
+    cayleyTable = perms.map(a =>
+      perms.map(b => composePerm(a, b).join(''))
+    );
+  }
 
   return {
     name,
