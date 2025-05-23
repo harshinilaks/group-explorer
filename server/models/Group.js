@@ -4,7 +4,8 @@ const groupSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: String,
   members: [String],
-  cayleyTable: [[String]]
+  cayleyTable: [[String]],
+  identity: String
 });
 
 const Group = mongoose.model('Group', groupSchema);

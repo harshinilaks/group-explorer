@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Welcome.css';
 
 function generateGroup(type, n) {
@@ -7,37 +8,61 @@ function generateGroup(type, n) {
   let description = '';
   let operation = () => '';
   let cayleyTable = [];
+  let identity = '';
 
   if (type === 'Z') {
     elements = Array.from({ length: n }, (_, i) => i.toString());
     operation = (a, b) => ((parseInt(a) + parseInt(b)) % n).toString();
     description = `Integers modulo ${n}`;
+    identity = '0';
     cayleyTable = elements.map(row => elements.map(col => operation(row, col)));
   } else if (type === 'D') {
     for (let i = 0; i < n; i++) elements.push(`r${i}`);
     for (let i = 0; i < n; i++) elements.push(`s${i}`);
     operation = (a, b) => `${a}*${b}`;
     description = `Dihedral group of order ${2 * n}`;
+    identity = 'r0';
     cayleyTable = elements.map(row => elements.map(col => operation(row, col)));
   } else if (type === 'S') {
     const perms = getPermutations(n);
-    elements = perms.map(p => p.join(''));
-    description = `Symmetric group on ${n} elements`;
 
-    const composePerm = (a, b) => {
-      return a.map(i => b[i - 1]);
+    const permToCycle = (perm) => {
+      const visited = Array(perm.length).fill(false);
+      const cycles = [];
+      for (let i = 0; i < perm.length; i++) {
+        if (!visited[i] && perm[i] !== i + 1) {
+          const cycle = [];
+          let j = i;
+          while (!visited[j]) {
+            visited[j] = true;
+            cycle.push(j + 1);
+            j = perm[j] - 1;
+          }
+          if (cycle.length > 1) cycles.push(`(${cycle.join('')})`);
+        }
+      }
+      return cycles.length ? cycles.join('') : '()';
     };
 
+    const permsStr = perms.map(p => permToCycle(p));
+
+    const composePerm = (a, b) => a.map(i => b[i - 1]);
+
     cayleyTable = perms.map(a =>
-      perms.map(b => composePerm(a, b).join(''))
+      perms.map(b => permToCycle(composePerm(a, b)))
     );
+
+    elements = permsStr;
+    description = `Symmetric group on ${n} elements`;
+    identity = '()';
   }
 
   return {
     name,
     description,
     members: elements,
-    cayleyTable
+    cayleyTable,
+    identity
   };
 }
 
@@ -74,9 +99,8 @@ function Welcome() {
   const [groups, setGroups] = useState([]);
   const [groupType, setGroupType] = useState('Z');
   const [n, setN] = useState(4);
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('theme') || 'light';
-  });
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.body.setAttribute('data-theme', theme);
@@ -149,30 +173,31 @@ function Welcome() {
 
       <div className="group-grid">
         {groups.map((group) => (
-          <div key={group._id} className="group-card">
+          <div
+            key={group._id}
+            className="group-card"
+            onClick={() => navigate(`/groups/${group._id}`)}
+            style={{ cursor: 'pointer' }}
+          >
             <h3 className="group-title">{formatGroupName(group.name)}</h3>
             <p className="group-desc">{group.description}</p>
             <table className="cayley-table">
               <thead>
                 <tr>
                   <th></th>
-                  {group.members.map((el, idx) => (
+                  {group.members.slice(0, 6).map((el, idx) => (
                     <th key={idx}>{el}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {group.cayleyTable.map((row, i) => (
+                {group.cayleyTable.slice(0, 6).map((row, i) => (
                   <tr key={i}>
                     <th>{group.members[i]}</th>
-                    {row.map((cell, j) => {
-                      const identity = group.members[0];
-                      const isIdentity = cell === identity;
+                    {row.slice(0, 6).map((cell, j) => {
+                      const isIdentity = String(cell).trim() === String(group.identity).trim();
                       return (
-                        <td
-                          key={j}
-                          className={`cell ${isIdentity ? 'identity' : ''}`}
-                        >
+                        <td key={j} className={`cell ${isIdentity ? 'identity' : ''}`}>
                           {cell}
                         </td>
                       );
@@ -181,6 +206,11 @@ function Welcome() {
                 ))}
               </tbody>
             </table>
+            {group.members.length > 6 && (
+              <p style={{ fontSize: '0.8rem', marginTop: '10px', color: 'gray' }}>
+                Preview only — click to explore full group
+              </p>
+            )}
           </div>
         ))}
       </div>

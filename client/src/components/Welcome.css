@@ -141,10 +141,12 @@ body[data-theme='dark'] {
 
 .cayley-table th,
 .cayley-table td {
-  border: 1px solid #ccc;
-  padding: 6px 10px;
-  text-align: center;
-  transition: background-color 0.2s ease;
+    border: 1px solid #ccc;
+    padding: 6px 10px;
+    text-align: center;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.2s ease;
+    background-color: var(--card-bg);
+    border-radius: 4px;
 }
 
 .cayley-table th {
@@ -153,7 +155,7 @@ body[data-theme='dark'] {
 }
 
 .cayley-table .identity {
-  background-color: var(--identity-bg);
+  background-color: var(--identity-bg) !important;
   font-weight: bold;
 }
 
@@ -162,5 +164,8 @@ body[data-theme='dark'] {
 }
 
 .cayley-table td:hover {
-  background-color: var(--hover-td-bg);
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 1;
+    position: relative;
 }
