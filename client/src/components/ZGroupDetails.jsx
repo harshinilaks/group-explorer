@@ -71,7 +71,11 @@ function ZGroupDetails() {
 
   return (
     <div style={{ padding: '20px' }}>
-      <h1>{group.name}</h1>
+      <h1>
+  {group.name.startsWith('Z_')
+    ? <span>Z<sub>{group.name.slice(2)}</sub></span>
+    : group.name}
+</h1>
       <p>{group.description}</p>
 
       <h2>Cayley Table</h2>

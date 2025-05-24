@@ -105,7 +105,11 @@ function SGroupDetails() {
 
   return (
     <div style={{ padding: '20px' }}>
-      <h1>{group.name}</h1>
+      <h1>
+  {group.name.startsWith('S_')
+    ? <span>S<sub>{group.name.slice(2)}</sub></span>
+    : group.name}
+</h1>
       <p>{group.description}</p>
 
       {Object.entries(cycleGroups).map(([type, els]) => (
