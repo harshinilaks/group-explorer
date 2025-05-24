@@ -5,7 +5,9 @@ const groupSchema = new mongoose.Schema({
   description: String,
   members: [String],
   cayleyTable: [[String]],
-  identity: String
+  identity: String,
+  //mongoose.Schema.Types.Mixed --> this allows for flexible objects!!
+  cycleGroups: mongoose.Schema.Types.Mixed
 });
 
 const Group = mongoose.model('Group', groupSchema);

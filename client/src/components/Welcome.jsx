@@ -9,6 +9,7 @@ function generateGroup(type, n) {
   let operation = () => '';
   let cayleyTable = [];
   let identity = '';
+  let cycleGroups = {};
 
   if (type === 'Z') {
     elements = Array.from({ length: n }, (_, i) => i.toString());
@@ -30,27 +31,56 @@ function generateGroup(type, n) {
       const visited = Array(perm.length).fill(false);
       const cycles = [];
       for (let i = 0; i < perm.length; i++) {
-        if (!visited[i] && perm[i] !== i + 1) {
-          const cycle = [];
+        if (!visited[i]) {
           let j = i;
+          const cycle = [];
           while (!visited[j]) {
             visited[j] = true;
             cycle.push(j + 1);
             j = perm[j] - 1;
           }
-          if (cycle.length > 1) cycles.push(`(${cycle.join('')})`);
+          if (cycle.length > 1) cycles.push(cycle);
         }
       }
-      return cycles.length ? cycles.join('') : '()';
+      if (cycles.length === 0) return '()';
+      return cycles.map(c => `(${c.join('')})`).join('');
     };
-
-    const permsStr = perms.map(p => permToCycle(p));
 
     const composePerm = (a, b) => a.map(i => b[i - 1]);
 
-    cayleyTable = perms.map(a =>
-      perms.map(b => permToCycle(composePerm(a, b)))
+    const cycles = perms.map(p => {
+      const cycleStr = permToCycle(p);
+      let type = 'identity';
+      if (cycleStr !== '()') {
+        const lengths = cycleStr.match(/\(([^)]+)\)/g).map(c => c.length - 2);
+        if (lengths.length === 1) {
+          type = `${lengths[0]}-cycle`;
+        } else {
+          type = `${lengths.join('+')}-cycle`;
+        }
+      }
+      return { perm: p, cycleStr, type };
+    });
+
+    cycles.sort((a, b) => {
+      const order = ['identity', '2-cycle', '3-cycle', '2+2-cycle', '2+3-cycle', '3+2-cycle'];
+      const aIndex = order.indexOf(a.type);
+      const bIndex = order.indexOf(b.type);
+      return aIndex - bIndex || a.cycleStr.localeCompare(b.cycleStr);
+    });
+
+    const permsStr = cycles.map(c => c.cycleStr);
+    const sortedPerms = cycles.map(c => c.perm);
+
+    cayleyTable = sortedPerms.map(a =>
+      sortedPerms.map(b => permToCycle(composePerm(a, b)))
     );
+
+    cycleGroups = {};
+    for (const c of cycles) {
+      if (!cycleGroups[c.type]) cycleGroups[c.type] = [];
+      cycleGroups[c.type].push(c.cycleStr);
+    }
 
     elements = permsStr;
     description = `Symmetric group on ${n} elements`;
@@ -62,9 +92,11 @@ function generateGroup(type, n) {
     description,
     members: elements,
     cayleyTable,
-    identity
+    identity,
+    cycleGroups
   };
 }
+
 
 function getPermutations(n) {
   if (n > 4) return [['too_big']];
@@ -181,6 +213,15 @@ function Welcome() {
           >
             <h3 className="group-title">{formatGroupName(group.name)}</h3>
             <p className="group-desc">{group.description}</p>
+            {group.cycleGroups && (
+              <div style={{ marginBottom: '10px', fontSize: '0.85rem', textAlign: 'left' }}>
+                {Object.entries(group.cycleGroups).map(([type, members]) => (
+                  <div key={type} style={{ marginBottom: '4px' }}>
+                    <strong>{type}:</strong> {members.join(', ')}
+                  </div>
+                ))}
+              </div>
+            )}
             <div className="table-container">
               <table className="cayley-table">
                 <thead>
