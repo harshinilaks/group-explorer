@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Welcome.css';
 
+
 function generateGroup(type, n) {
   let elements = [];
   let name = `${type}_${n}`;
@@ -17,15 +18,38 @@ function generateGroup(type, n) {
     identity = '0';
     cayleyTable = elements.map(row => elements.map(col => operation(row, col)));
   } else if (type === 'D') {
-    for (let i = 0; i < n; i++) elements.push(`r${i}`);
-    for (let i = 0; i < n; i++) elements.push(`s${i}`);
-    operation = (a, b) => `${a}*${b}`;
-    description = `Dihedral group of order ${2 * n}`;
-    identity = 'r0';
+    const rot = Array.from({ length: n }, (_, i) => i === 0 ? 'e' : `r${i}`);
+    const refl = Array.from({ length: n }, (_, i) => i === 0 ? 's' : `sr${i}`);
+    elements = [...rot, ...refl];
+    identity = 'e';
+
+    const parse = (x) => {
+      if (x === 'e') return ['r', 0];
+      if (x === 's') return ['sr', 0];
+      if (/^r\d+$/.test(x)) return ['r', parseInt(x.slice(1))];
+      if (/^sr\d+$/.test(x)) return ['sr', parseInt(x.slice(2))];
+      return ['invalid', 0];
+    };
+
+    const operation = (a, b) => {
+      const [t1, i] = parse(a);
+      const [t2, j] = parse(b);
+
+      if (a === 'e') return b;
+      if (b === 'e') return a;
+
+      if (t1 === 'r' && t2 === 'r') return (i + j) % n === 0 ? 'e' : `r${(i + j) % n}`;
+      if (t1 === 'r' && t2 === 'sr') return (j - i + n) % n === 0 ? 's' : `sr${(j - i + n) % n}`;
+      if (t1 === 'sr' && t2 === 'r') return (i + j) % n === 0 ? 's' : `sr${(i + j) % n}`;
+      if (t1 === 'sr' && t2 === 'sr') return (j - i + n) % n === 0 ? 'e' : `r${(j - i + n) % n}`;
+
+      return 'e';
+    };
+
+    description = `Dihedral group Dₙ with ${2 * n} elements`;
     cayleyTable = elements.map(row => elements.map(col => operation(row, col)));
   } else if (type === 'S') {
     const perms = getPermutations(n);
-
     const permToCycle = (perm) => {
       const visited = Array(perm.length).fill(false);
       const cycles = [];
@@ -44,35 +68,18 @@ function generateGroup(type, n) {
       if (cycles.length === 0) return '()';
       return cycles.map(c => `(${c.join('')})`).join('');
     };
-
     const composePerm = (a, b) => a.map(i => b[i - 1]);
-
-    const cycles = perms.map(p => {
-      const cycleStr = permToCycle(p);
-      return { perm: p, cycleStr };
-    });
-
+    const cycles = perms.map(p => ({ perm: p, cycleStr: permToCycle(p) }));
     const permsStr = cycles.map(c => c.cycleStr);
     const sortedPerms = cycles.map(c => c.perm);
-
-    cayleyTable = sortedPerms.map(a =>
-      sortedPerms.map(b => permToCycle(composePerm(a, b)))
-    );
-
+    cayleyTable = sortedPerms.map(a => sortedPerms.map(b => permToCycle(composePerm(a, b))));
     elements = permsStr;
-    description = `Symmetric group on ${n} elements`;
     identity = '()';
+    description = `Symmetric group on ${n} elements`;
   }
 
-  return {
-    name,
-    description,
-    members: elements,
-    cayleyTable,
-    identity
-  };
+  return { name, description, members: elements, cayleyTable, identity };
 }
-
 
 function getPermutations(n) {
   if (n > 4) return [['too_big']];
@@ -184,20 +191,15 @@ function Welcome() {
           <div
             key={group._id}
             className="group-card"
-            onClick={() => navigate(`/groups/${group._id}`)}
+            onClick={() => {
+              const match = group.name.match(/^([A-Za-z]+)_/);
+              const type = match ? match[1] : 'Z'; 
+              navigate(`/groups/${type}/${group._id}`);
+            }}
             style={{ cursor: 'pointer' }}
           >
             <h3 className="group-title">{formatGroupName(group.name)}</h3>
             <p className="group-desc">{group.description}</p>
-            {group.cycleGroups && (
-              <div style={{ marginBottom: '10px', fontSize: '0.85rem', textAlign: 'left' }}>
-                {Object.entries(group.cycleGroups).map(([type, members]) => (
-                  <div key={type} style={{ marginBottom: '4px' }}>
-                    <strong>{type}:</strong> {members.join(', ')}
-                  </div>
-                ))}
-              </div>
-            )}
             <div className="table-container">
               <table className="cayley-table">
                 <thead>

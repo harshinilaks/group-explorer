@@ -37,7 +37,7 @@ function getColorForType(type) {
   return `hsl(${hue}, 30%, 30%)`;
 }
 
-function GroupDetails() {
+function SGroupDetails() {
   const { id } = useParams();
   const [group, setGroup] = useState(null);
   const [draggedElement, setDraggedElement] = useState(null);
@@ -250,4 +250,4 @@ function GroupDetails() {
   );
 }
 
-export default GroupDetails;
+export default SGroupDetails;
