@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import './Welcome.css';
+import DihedralVisualizer from './DihedralVisualizer.jsx';
 
 function DGroupDetails() {
   const { id } = useParams();
@@ -201,32 +202,38 @@ function DGroupDetails() {
       </div>
 
       {steps.length > 0 && (
-        <div style={{ marginTop: '20px', fontSize: '0.95rem', color: '#ddd' }}>
-          <h3>Step-by-step Computation</h3>
-          <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
-            {steps.map((s, i) => (
-              <li key={i} style={{ marginBottom: '6px' }}>
-                {s.step === 1
-                  ? `Step 1: ${formatElement(s.value)}`
-                  : s.error
-                  ? `Step ${s.step}: Error composing ${formatElement(s.left)} × ${formatElement(s.right)}`
-                  : `Step ${s.step}: ${formatElement(s.left)} × ${formatElement(s.right)} = ${formatElement(s.value)}`}
-              </li>
-            ))}
-          </ul>
-          <div
-            style={{
-              marginTop: '12px',
-              fontSize: '1.1rem',
-              color: '#90ee90',
-              background: '#222',
-              padding: '8px 12px',
-              borderRadius: '6px',
-              display: 'inline-block',
-              border: '1px solid #555'
-            }}
-          >
-            Final product: {formatElement(finalProduct)}
+        <div style={{ display: 'flex', gap: '30px', marginTop: '40px', flexWrap: 'wrap' }}>
+          <div style={{ flex: 1, minWidth: '300px' }}>
+            <h2>Polygon Visualizer</h2>
+            <DihedralVisualizer n={group.members.length / 2} element={finalProduct} />
+          </div>
+          <div style={{ flex: 1, minWidth: '300px', fontSize: '0.95rem', color: '#ddd' }}>
+            <h3>Step-by-step Computation</h3>
+            <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
+              {steps.map((s, i) => (
+                <li key={i} style={{ marginBottom: '6px' }}>
+                  {s.step === 1
+                    ? `Step 1: ${formatElement(s.value)}`
+                    : s.error
+                    ? `Step ${s.step}: Error composing ${formatElement(s.left)} × ${formatElement(s.right)}`
+                    : `Step ${s.step}: ${formatElement(s.left)} × ${formatElement(s.right)} = ${formatElement(s.value)}`}
+                </li>
+              ))}
+            </ul>
+            <div
+              style={{
+                marginTop: '12px',
+                fontSize: '1.1rem',
+                color: '#90ee90',
+                background: '#222',
+                padding: '8px 12px',
+                borderRadius: '6px',
+                display: 'inline-block',
+                border: '1px solid #555'
+              }}
+            >
+              Final product: {formatElement(finalProduct)}
+            </div>
           </div>
         </div>
       )}

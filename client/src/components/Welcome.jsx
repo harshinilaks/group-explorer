@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Welcome.css';
 
-
 function generateGroup(type, n) {
   let elements = [];
   let name = `${type}_${n}`;
@@ -115,6 +114,7 @@ function Welcome() {
   const [groupType, setGroupType] = useState('Z');
   const [n, setN] = useState(4);
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -138,6 +138,28 @@ function Welcome() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const button = document.querySelector('.group-form button');
+    const groupName = `${groupType}_${n}`;
+
+    if (groupType === 'S' && n > 4) {
+      setError('SnTooBig');
+      if (button) {
+        button.classList.add('shake');
+        setTimeout(() => button.classList.remove('shake'), 500);
+      }
+      return;
+    }
+
+    if (groups.some(g => g.name === groupName)) {
+      setError('GroupExists');
+      if (button) {
+        button.classList.add('shake');
+        setTimeout(() => button.classList.remove('shake'), 500);
+      }
+      return;
+    }
+
+    setError('');
     const groupData = generateGroup(groupType, n);
     const res = await fetch('/api/groups', {
       method: 'POST',
@@ -181,7 +203,22 @@ function Welcome() {
             required
           />
         </label>
-        <button type="submit">Create Group</button>
+        <button
+          type="submit"
+          className={error ? 'error-button' : ''}
+        >
+          Create Group
+        </button>
+        {error === 'SnTooBig' && (
+          <p style={{ color: '#f28b82', fontSize: '0.85rem', marginTop: '6px' }}>
+            Sorry! Sₙ groups with n ≥ 5 are too large to visualize.
+          </p>
+        )}
+        {error === 'GroupExists' && (
+          <p style={{ color: '#f28b82', fontSize: '0.85rem', marginTop: '6px' }}>
+            That group already exists.
+          </p>
+        )}
       </form>
 
       <h2 className="section-header">Groups</h2>
@@ -193,7 +230,7 @@ function Welcome() {
             className="group-card"
             onClick={() => {
               const match = group.name.match(/^([A-Za-z]+)_/);
-              const type = match ? match[1] : 'Z'; 
+              const type = match ? match[1] : 'Z';
               navigate(`/groups/${type}/${group._id}`);
             }}
             style={{ cursor: 'pointer' }}
