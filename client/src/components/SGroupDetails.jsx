@@ -28,13 +28,13 @@ function classifyCycleTypes(elements) {
 }
 
 function getColorForType(type) {
-  if (type === 'identity') return '#2e7d32';
+  if (type === 'identity') return 'var(--identity-bg)';
   let hash = 5381;
   for (let i = 0; i < type.length; i++) {
     hash = (hash * 33) ^ type.charCodeAt(i);
   }
   const hue = Math.abs(hash % 360);
-  return `hsl(${hue}, 30%, 30%)`;
+  return `hsl(${hue}, 40%, 50%)`;
 }
 
 function SGroupDetails() {
@@ -67,10 +67,10 @@ function SGroupDetails() {
   const computeSteps = () => {
     const steps = [];
     if (selectedElements.length === 0) return [];
-  
+
     let current = selectedElements[0];
     steps.push({ step: 1, value: current });
-  
+
     for (let i = 1; i < selectedElements.length; i++) {
       const left = current;
       const right = selectedElements[i];
@@ -85,7 +85,7 @@ function SGroupDetails() {
       });
       current = result;
     }
-  
+
     return steps;
   };
 
@@ -104,25 +104,17 @@ function SGroupDetails() {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>
-  {group.name.startsWith('S_')
-    ? <span>S<sub>{group.name.slice(2)}</sub></span>
-    : group.name}
-</h1>
-      <p>{group.description}</p>
+    <div className="details-container">
+      <h1 className="details-header">
+        {group.name.startsWith('S_') ? <span>S<sub>{group.name.slice(2)}</sub></span> : group.name}
+      </h1>
+      <p className="details-description">{group.description}</p>
 
       {Object.entries(cycleGroups).map(([type, els]) => (
         <div
           key={type}
-          style={{
-            marginBottom: '8px',
-            fontSize: '0.85rem',
-            padding: '6px 10px',
-            borderRadius: '6px',
-            backgroundColor: getColorForType(type),
-            color: '#f1f1f1'
-          }}
+          className="cycle-type-label"
+          style={{ backgroundColor: getColorForType(type) }}
         >
           <strong>{type}:</strong> {els.join(', ')}
         </div>
@@ -137,11 +129,8 @@ function SGroupDetails() {
               <th
                 key={idx}
                 {...makeDraggable(el)}
-                style={{
-                  backgroundColor: getColorForType(cycleTypeMap[el]),
-                  color: '#f1f1f1',
-                  border: '1px solid #444'
-                }}
+                className="table-header-cell"
+                style={{ backgroundColor: getColorForType(cycleTypeMap[el]) }}
               >
                 {el}
               </th>
@@ -153,11 +142,8 @@ function SGroupDetails() {
             <tr key={i}>
               <th
                 {...makeDraggable(rowEl)}
-                style={{
-                  backgroundColor: getColorForType(cycleTypeMap[rowEl]),
-                  color: '#f1f1f1',
-                  border: '1px solid #444'
-                }}
+                className="table-header-cell"
+                style={{ backgroundColor: getColorForType(cycleTypeMap[rowEl]) }}
               >
                 {rowEl}
               </th>
@@ -167,12 +153,8 @@ function SGroupDetails() {
                 return (
                   <td
                     key={j}
-                    className={`cell ${product === group.identity ? 'identity' : ''}`}
-                    style={{
-                      backgroundColor: getColorForType(productType),
-                      color: '#f1f1f1',
-                      border: '1px solid #444'
-                    }}
+                    className={`table-cell ${product === group.identity ? 'identity' : ''}`}
+                    style={{ backgroundColor: getColorForType(productType) }}
                   >
                     {product}
                   </td>
@@ -184,23 +166,7 @@ function SGroupDetails() {
       </table>
 
       <h2 style={{ marginTop: '40px' }}>Group Element Composer</h2>
-      <div
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={handleDrop}
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: '8px',
-          padding: '12px',
-          border: '2px dashed #777',
-          borderRadius: '8px',
-          background: '#333',
-          color: '#f1f1f1',
-          minHeight: '60px',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}
-      >
+      <div onDragOver={(e) => e.preventDefault()} onDrop={handleDrop} className="drop-zone">
         {selectedElements.length === 0
           ? 'Drag elements here to compose'
           : selectedElements.map((el, i) => (
@@ -208,12 +174,8 @@ function SGroupDetails() {
                 {i > 0 && <span style={{ fontSize: '1.2rem' }}>→</span>}
                 <span
                   onClick={() => removeElement(i)}
-                  style={{
-                    padding: '6px 10px',
-                    borderRadius: '6px',
-                    background: getColorForType(cycleTypeMap[el]),
-                    cursor: 'pointer'
-                  }}
+                  className="selected-element"
+                  style={{ backgroundColor: getColorForType(cycleTypeMap[el]) }}
                   title="Click to remove"
                 >
                   {el}
@@ -223,7 +185,7 @@ function SGroupDetails() {
       </div>
 
       {steps.length > 0 && (
-        <div style={{ marginTop: '20px', fontSize: '0.95rem', color: '#ddd' }}>
+        <div style={{ marginTop: '20px', fontSize: '0.95rem' }}>
           <h3>Step-by-step Computation</h3>
           <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
             {steps.map((s, i) => (
@@ -234,18 +196,7 @@ function SGroupDetails() {
               </li>
             ))}
           </ul>
-          <div
-            style={{
-              marginTop: '12px',
-              fontSize: '1.1rem',
-              color: '#90ee90',
-              background: '#222',
-              padding: '8px 12px',
-              borderRadius: '6px',
-              display: 'inline-block',
-              border: '1px solid #555'
-            }}
-          >
+          <div className="final-product-box">
             Final product: {finalProduct}
           </div>
         </div>
