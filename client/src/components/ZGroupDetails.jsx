@@ -67,16 +67,12 @@ function ZGroupDetails() {
     setSelectedElements((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const defaultColor = '#444';
-
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>
-  {group.name.startsWith('Z_')
-    ? <span>Z<sub>{group.name.slice(2)}</sub></span>
-    : group.name}
-</h1>
-      <p>{group.description}</p>
+    <div className="details-container">
+      <h1 className="details-header">
+        {group.name.startsWith('Z_') ? <span>Z<sub>{group.name.slice(2)}</sub></span> : group.name}
+      </h1>
+      <p className="details-description">{group.description}</p>
 
       <h2>Cayley Table</h2>
       <table className="cayley-table">
@@ -84,15 +80,7 @@ function ZGroupDetails() {
           <tr>
             <th></th>
             {orderedElements.map((el, idx) => (
-              <th
-                key={idx}
-                {...makeDraggable(el)}
-                style={{
-                  backgroundColor: defaultColor,
-                  color: '#f1f1f1',
-                  border: '1px solid #444'
-                }}
-              >
+              <th key={idx} {...makeDraggable(el)} className="table-header-cell">
                 {el}
               </th>
             ))}
@@ -101,29 +89,14 @@ function ZGroupDetails() {
         <tbody>
           {orderedElements.map((rowEl, i) => (
             <tr key={i}>
-              <th
-                {...makeDraggable(rowEl)}
-                style={{
-                  backgroundColor: defaultColor,
-                  color: '#f1f1f1',
-                  border: '1px solid #444'
-                }}
-              >
+              <th {...makeDraggable(rowEl)} className="table-header-cell">
                 {rowEl}
               </th>
               {orderedElements.map((colEl, j) => {
                 const product = group.cayleyTable[group.members.indexOf(rowEl)][group.members.indexOf(colEl)];
                 const isIdentity = product === group.identity;
                 return (
-                  <td
-                    key={j}
-                    className={`cell ${isIdentity ? 'identity' : ''}`}
-                    style={{
-                      backgroundColor: defaultColor,
-                      color: '#f1f1f1',
-                      border: '1px solid #444'
-                    }}
-                  >
+                  <td key={j} className={`table-cell ${isIdentity ? 'identity' : ''}`}>
                     {product}
                   </td>
                 );
@@ -134,23 +107,7 @@ function ZGroupDetails() {
       </table>
 
       <h2 style={{ marginTop: '40px' }}>Group Element Composer</h2>
-      <div
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={handleDrop}
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: '8px',
-          padding: '12px',
-          border: '2px dashed #777',
-          borderRadius: '8px',
-          background: '#333',
-          color: '#f1f1f1',
-          minHeight: '60px',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}
-      >
+      <div onDragOver={(e) => e.preventDefault()} onDrop={handleDrop} className="drop-zone">
         {selectedElements.length === 0
           ? 'Drag elements here to compose'
           : selectedElements.map((el, i) => (
@@ -158,12 +115,7 @@ function ZGroupDetails() {
                 {i > 0 && <span style={{ fontSize: '1.2rem' }}>+</span>}
                 <span
                   onClick={() => removeElement(i)}
-                  style={{
-                    padding: '6px 10px',
-                    borderRadius: '6px',
-                    background: '#666',
-                    cursor: 'pointer'
-                  }}
+                  className="selected-element"
                   title="Click to remove"
                 >
                   {el}
@@ -173,7 +125,7 @@ function ZGroupDetails() {
       </div>
 
       {steps.length > 0 && (
-        <div style={{ marginTop: '20px', fontSize: '0.95rem', color: '#ddd' }}>
+        <div style={{ marginTop: '20px', fontSize: '0.95rem' }}>
           <h3>Step-by-step Computation</h3>
           <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
             {steps.map((s, i) => (
@@ -184,18 +136,7 @@ function ZGroupDetails() {
               </li>
             ))}
           </ul>
-          <div
-            style={{
-              marginTop: '12px',
-              fontSize: '1.1rem',
-              color: '#90ee90',
-              background: '#222',
-              padding: '8px 12px',
-              borderRadius: '6px',
-              display: 'inline-block',
-              border: '1px solid #555'
-            }}
-          >
+          <div className="final-product-box">
             Final product: {finalProduct}
           </div>
         </div>
