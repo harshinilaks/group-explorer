@@ -103,13 +103,11 @@ function DGroupDetails() {
   const orderedElements = group.members;
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>
-  {group.name.startsWith('D_')
-    ? <span>D<sub>{group.name.slice(2)}</sub></span>
-    : group.name}
-</h1>
-      <p>{group.description}</p>
+    <div className="details-container">
+      <h1 className="details-header">
+        {group.name.startsWith('D_') ? <span>D<sub>{group.name.slice(2)}</sub></span> : group.name}
+      </h1>
+      <p className="details-description">{group.description}</p>
 
       <h2>Cayley Table</h2>
       <table className="cayley-table">
@@ -117,15 +115,7 @@ function DGroupDetails() {
           <tr>
             <th></th>
             {orderedElements.map((el, idx) => (
-              <th
-                key={idx}
-                {...makeDraggable(el)}
-                style={{
-                  backgroundColor: '#555',
-                  color: '#f1f1f1',
-                  border: '1px solid #444'
-                }}
-              >
+              <th key={idx} {...makeDraggable(el)} className="table-header-cell">
                 {formatElement(el)}
               </th>
             ))}
@@ -134,29 +124,14 @@ function DGroupDetails() {
         <tbody>
           {orderedElements.map((rowEl, i) => (
             <tr key={i}>
-              <th
-                {...makeDraggable(rowEl)}
-                style={{
-                  backgroundColor: '#555',
-                  color: '#f1f1f1',
-                  border: '1px solid #444'
-                }}
-              >
+              <th {...makeDraggable(rowEl)} className="table-header-cell">
                 {formatElement(rowEl)}
               </th>
               {orderedElements.map((colEl, j) => {
                 const product = group.cayleyTable[i][j];
                 const isIdentity = product === group.identity;
                 return (
-                  <td
-                    key={j}
-                    className={`cell ${isIdentity ? 'identity' : ''}`}
-                    style={{
-                      backgroundColor: '#444',
-                      color: '#f1f1f1',
-                      border: '1px solid #444'
-                    }}
-                  >
+                  <td key={j} className={`table-cell ${isIdentity ? 'identity' : ''}`}>
                     {formatElement(product)}
                   </td>
                 );
@@ -170,19 +145,7 @@ function DGroupDetails() {
       <div
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleDrop}
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: '8px',
-          padding: '12px',
-          border: '2px dashed #777',
-          borderRadius: '8px',
-          background: '#333',
-          color: '#f1f1f1',
-          minHeight: '60px',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}
+        className="drop-zone"
       >
         {selectedElements.length === 0
           ? 'Drag elements here to compose'
@@ -191,12 +154,7 @@ function DGroupDetails() {
                 {i > 0 && <span style={{ fontSize: '1.2rem' }}>×</span>}
                 <span
                   onClick={() => removeElement(i)}
-                  style={{
-                    padding: '6px 10px',
-                    borderRadius: '6px',
-                    background: '#666',
-                    cursor: 'pointer'
-                  }}
+                  className="selected-element"
                   title="Click to remove"
                 >
                   {formatElement(el)}
@@ -211,7 +169,7 @@ function DGroupDetails() {
             <h2>Polygon Visualizer</h2>
             <DihedralVisualizer n={group.members.length / 2} element={finalProduct} />
           </div>
-          <div style={{ flex: 1, minWidth: '300px', fontSize: '0.95rem', color: '#ddd' }}>
+          <div style={{ flex: 1, minWidth: '300px', fontSize: '0.95rem' }}>
             <h3>Step-by-step Computation</h3>
             <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
               {steps.map((s, i) => (
@@ -224,18 +182,7 @@ function DGroupDetails() {
                 </li>
               ))}
             </ul>
-            <div
-              style={{
-                marginTop: '12px',
-                fontSize: '1.1rem',
-                color: '#90ee90',
-                background: '#222',
-                padding: '8px 12px',
-                borderRadius: '6px',
-                display: 'inline-block',
-                border: '1px solid #555'
-              }}
-            >
+            <div className="final-product-box">
               Final product: {formatElement(finalProduct)}
             </div>
           </div>
