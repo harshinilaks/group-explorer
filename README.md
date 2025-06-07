@@ -1,2 +1,2 @@
 # group-explorer
-cayley group visualizer &amp; explorer :)
+full-stack cayley group visualizer &amp; explorer :)
