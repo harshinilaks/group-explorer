@@ -67,7 +67,7 @@ link coming soon!
 
 ## 🧑‍💻 Author
 
-Built by [Your Name](https://github.com/your-username)
+Built by harsh!
 
 ---
 
