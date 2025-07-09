@@ -8,7 +8,8 @@ A full-stack interactive web application that enables exploration of algebraic g
 
 ## 🎥 Demo Video
 
-link coming soon!
+[![Demo Video](https://img.youtube.com/vi/-FsylIFKAGA/0.jpg)](https://youtu.be/-FsylIFKAGA "Group Theory Visualizer Demo")
+
 ---
 
 ## 🌐 What the Application Does
