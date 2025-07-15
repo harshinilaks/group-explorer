@@ -2,7 +2,7 @@
 
 A full-stack interactive web application that enables exploration of algebraic group structures — including **Cyclic groups (Zₙ)**, **Dihedral groups (Dₙ)**, and **Symmetric groups (Sₙ)**. The platform allows users to dynamically generate group elements, compute Cayley tables, visualize group operations, and interactively compose group elements with step-by-step computation.
 
-> ❗ **Note**: This project has not yet been deployed publicly. A demo video is attached below to showcase functionality.
+> ❗ **Note**: This project has not yet been deployed publicly. A demo video is attached below to showcase functionality. I will attach the link to access the project yourself after the project has been fully deployed!
 
 ---
 
