@@ -35,7 +35,7 @@ A full-stack interactive web application that enables exploration of algebraic g
 
 ### Backend
 - **Node.js + Express.js** – handles API requests, group logic computation, and group structure generation
-- **MongoDB Atlas** – stores saved groups (if persistence is extended later)
+- **MongoDB Atlas** – stores saved groups 
 
 ---
 
